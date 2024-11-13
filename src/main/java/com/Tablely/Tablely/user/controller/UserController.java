@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
+    // 회원가입
     @PostMapping("/members")
     private ResponseEntity<UserAddResDto> add() {
         return ResponseEntity
