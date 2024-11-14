@@ -3,15 +3,13 @@ package com.Tablely.Tablely.global.jwt;
 import java.security.Key;
 import java.util.Date;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import com.Tablely.Tablely.global.exception.ErrorCode;
 import com.Tablely.Tablely.user.domain.UserType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
@@ -29,16 +27,15 @@ public class JwtService {
             .compact();
     }
 
-    public JwtUserInfo getUserId() {
-        String accessToken = getJwt();
-        if (accessToken == null || accessToken.isBlank()) {
-            throw new RuntimeException();
+    public JwtUserInfo getUserInfo(String token) {
+        if (token == null || token.isBlank()) {
+            throw new JwtException(ErrorCode.JWT_INVALID_TOKEN);
         }
 
         Jws<Claims> claims = Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
-            .parseClaimsJws(accessToken);
+            .parseClaimsJws(token);
 
         Long userId = Long.parseLong(claims.getBody().getSubject());
         String userTypeString  = claims.getBody().get("userType", String.class);
@@ -47,8 +44,15 @@ public class JwtService {
         return new JwtUserInfo(userId, userType);
     }
 
-    private String getJwt() {
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-        return request.getHeader("Authorization");
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
