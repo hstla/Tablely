@@ -1,7 +1,12 @@
 package com.Tablely.Tablely.global.filter;
 
+import static com.Tablely.Tablely.global.jwt.JwtUtil.*;
 import java.io.IOException;
-import com.Tablely.Tablely.global.jwt.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.Tablely.Tablely.global.exception.ErrorCode;
+import com.Tablely.Tablely.global.jwt.JwtException;
+import com.Tablely.Tablely.global.jwt.JwtUserInfo;
+import com.Tablely.Tablely.global.jwt.JwtUtil;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,20 +20,21 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements Filter {
 
-    private final JwtService jwtService;
+    private final JwtUtil jwtUtil;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        log.info("request {}", request);
-        log.info("response {}", response);
         String authorizationHeader = ((HttpServletRequest)request).getHeader("Authorization");
-        if(!authorizationHeader.isEmpty() && authorizationHeader.startsWith("Bearer ")) {
-            String jwtToken = authorizationHeader.substring(7);
-            log.info("jwtToken {}", jwtToken);
-            jwtService.validateToken(jwtToken);
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new JwtException(ErrorCode.JWT_INVALID_TOKEN);
+        }
+        String jwtToken = authorizationHeader.substring(7);
+        if(!jwtUtil.validateToken(jwtToken)) {
+            throw new JwtException(ErrorCode.JWT_INVALID_TOKEN);
         }
 
-
+        JwtUserInfo userInfo = jwtUtil.getUserInfo(jwtToken);
+        request.setAttribute("userInfo", userInfo);
         chain.doFilter(request, response);
     }
 }
