@@ -3,31 +3,30 @@ package com.Tablely.Tablely.global.jwt;
 import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import com.Tablely.Tablely.user.domain.UserType;
 
 /**
  * 어노테이션 설명
- * @ExtendWith(MockitoExtension.class): mockito를 사용할 수 있도록 하는 어노테이션 @Mock, @InjectMocks 사용 가능
- * @InjectMocks: mock 객체들을 실제 객체에 자동으로 주입하는 어노테이션이다.
+ * @SpringBootTest: Spring Boot의 전체 애플리케이션 컨텍스트를 로드하는 어노테이션.
+ * JwtUtil의 key값이 주입되기 위해 SpringBootTest 어노테이션 사용
  */
-@ExtendWith(MockitoExtension.class)
-class JwtServiceTest {
+@SpringBootTest
+class JwtUtilTest {
 
-    @InjectMocks
-    private JwtService jwtService;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @DisplayName("토큰을 생성하고 그 토큰을 통해 사용자 정보를 가져온다.")
     @Test
-    void createToken() {
+    void addToken() {
         //given
         JwtUserInfo jwtUserInfo = new JwtUserInfo(1L, UserType.CUSTOMER);
-        String token = jwtService.createToken(jwtUserInfo);
-
+        String token = jwtUtil.createToken(jwtUserInfo);
+        System.out.println("token " + token);
         //when
-        JwtUserInfo userInfo = jwtService.getUserInfo(token);
+        JwtUserInfo userInfo = jwtUtil.getUserInfo(token);
 
         //then
         assertThat(userInfo.getUserId()).isEqualTo(jwtUserInfo.getUserId());
@@ -36,13 +35,13 @@ class JwtServiceTest {
 
     @DisplayName("토큰을 생성하고 검증한다.")
     @Test
-    void validateToken() {
+    void tokenValidate() {
         //given
         JwtUserInfo jwtUserInfo = new JwtUserInfo(1L, UserType.CUSTOMER);
-        String token = jwtService.createToken(jwtUserInfo);
+        String token = jwtUtil.createToken(jwtUserInfo);
 
         //when
-        boolean validateToken = jwtService.validateToken(token);
+        boolean validateToken = jwtUtil.validateToken(token);
 
         //then
         assertThat(validateToken).isTrue();
