@@ -23,4 +23,11 @@ public class User extends BaseEntity {
 	private String name;
 	@Enumerated(EnumType.STRING)
 	private UserType userType;
+
+	public User(String email, String password, String name, UserType userType) {
+		this.email = email;
+		this.password = password;
+		this.name = name;
+		this.userType = userType;
+	}
 }
