@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String authorizationHeader = ((HttpServletRequest)request).getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new JwtException(ErrorCode.JWT_INVALID_TOKEN);
+            throw new JwtException(ErrorCode.JWT_TOKEN_NOT_PROVIDED);
         }
         String jwtToken = authorizationHeader.substring(7);
         if(!jwtUtil.validateToken(jwtToken)) {
