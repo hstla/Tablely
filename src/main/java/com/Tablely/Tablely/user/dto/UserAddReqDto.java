@@ -25,6 +25,14 @@ public class UserAddReqDto {
 	@NotNull
 	private String checkPassword;
 
+	public UserAddReqDto(String name, String email, UserType userType, String password, String checkPassword) {
+		this.name = name;
+		this.email = email;
+		this.userType = userType;
+		this.password = password;
+		this.checkPassword = checkPassword;
+	}
+
 	public boolean checkPassword() {
 		if (!this.password.equals(this.checkPassword)) {
 			throw new UserException(ErrorCode.INVALID_PASSWORD);
