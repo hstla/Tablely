@@ -50,10 +50,8 @@ class UserFacadeTest {
 		// given
 		UserAddReqDto userReqDto = new UserAddReqDto("name", "test@email.com", UserType.CUSTOMER, "qwe123", "qwe123");
 
-		String encryptedEmail = "test@email.com";
 		doThrow(new UserException(ErrorCode.USER_DUPLICATED))
-			.when(userQueryService).checkEmailDuplicated(encryptedEmail);
-		doReturn(encryptedEmail).when(oneWayCipherService).encrypt(userReqDto.getEmail());
+			.when(userQueryService).checkEmailDuplicated("test@email.com");
 
 		// when & then
 		assertThatThrownBy(() -> userFacade.add(userReqDto))
