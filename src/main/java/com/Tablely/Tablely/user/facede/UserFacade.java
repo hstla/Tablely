@@ -41,3 +41,11 @@ public class UserFacade {
 
 		return new JwtUserInfo(findUser.getId(), findUser.getUserType());
 	}
+
+	// todo soft delete 추가하여 삭제 유무를 판단 후 삭제한다.
+	@Transactional
+	public void delete(Long userId) {
+		User findUser = userQueryService.findById(userId);
+		userService.deleteUser(findUser.getId());
+	}
+}

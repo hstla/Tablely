@@ -1,17 +1,26 @@
 package com.Tablely.Tablely.user.controller;
 
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.Tablely.Tablely.user.dto.UserAddReqDto;
+import com.Tablely.Tablely.global.jwt.JwtUserInfo;
+import com.Tablely.Tablely.global.jwt.JwtUtil;
+import com.Tablely.Tablely.user.dto.UserJoinReqDto;
 import com.Tablely.Tablely.user.dto.UserAddResDto;
+import com.Tablely.Tablely.user.dto.UserLoginReqDto;
 import com.Tablely.Tablely.user.facede.UserFacade;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +43,26 @@ public class UserController {
 			.status(HttpStatus.CREATED).
 			build();
 	}
+
+	// 회원탈퇴
+	@DeleteMapping("/members/{userId}")
+	private ResponseEntity<Void> delete(@PathVariable Long userId, HttpServletRequest request) {
+		// 토큰에 있는 유저와 입력받은 유저간 맞는지 check 하고 삭제한다.
+		JwtUserInfo requestUser = (JwtUserInfo) request.getAttribute("userInfo");
+		if (!requestUser.getUserId().equals(userId)) {
+			return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		userFacade.delete(userId);
+
+		return ResponseEntity
+			.status(HttpStatus.OK).
+			build();
+	}
+
+
+
 	// 로그인
 	@PostMapping("/login")
 	private ResponseEntity<Void> login(@Valid @RequestBody UserLoginReqDto userLoginReqDto, HttpServletResponse response) {
