@@ -5,7 +5,8 @@ public enum ErrorCode {
 	JWT_INVALID_TOKEN("잘못된 토큰 값입니다.", 402),
 	JWT_TOKEN_NOT_PROVIDED("토큰이 존재하지 않습니다.", 403),
 	INVALID_PASSWORD("비밀번호가 일치하지 않습니다.", 404),
-	USER_DUPLICATED("이메일이 중복되었습니다.", 405);
+	USER_DUPLICATED("이메일이 중복되었습니다.", 405),
+	WRONG_PASSWORD("비밀번호가 틀립니다.", 406);
 
 
 	private final String description;

@@ -1,6 +1,5 @@
 package com.Tablely.Tablely.user.dto;
 
-import com.Tablely.Tablely.global.exception.BusinessException;
 import com.Tablely.Tablely.global.exception.ErrorCode;
 import com.Tablely.Tablely.user.UserException;
 import com.Tablely.Tablely.user.domain.UserType;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserAddReqDto {
+public class UserJoinReqDto {
 	@NotNull
 	private String name;
 	@Email
@@ -25,7 +24,7 @@ public class UserAddReqDto {
 	@NotNull
 	private String checkPassword;
 
-	public UserAddReqDto(String name, String email, UserType userType, String password, String checkPassword) {
+	public UserJoinReqDto(String name, String email, UserType userType, String password, String checkPassword) {
 		this.name = name;
 		this.email = email;
 		this.userType = userType;

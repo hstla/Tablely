@@ -13,10 +13,8 @@ import com.Tablely.Tablely.user.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-
     @InjectMocks
     UserService userService;
-
     @Mock
     UserRepository userRepository;
 

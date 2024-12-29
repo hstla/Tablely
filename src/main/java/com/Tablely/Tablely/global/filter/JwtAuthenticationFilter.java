@@ -25,6 +25,22 @@ public class JwtAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String authorizationHeader = ((HttpServletRequest)request).getHeader("Authorization");
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+        String requestURI = httpRequest.getRequestURI();
+        String method = httpRequest.getMethod();
+
+        // 회원가입과 로그인은 토큰 검증을 하지 않는다.
+        if ("/api/members".equals(requestURI) && "POST".equals(method)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        if ("/api/login".equals(requestURI) && "POST".equals(method)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new JwtException(ErrorCode.JWT_TOKEN_NOT_PROVIDED);
         }
