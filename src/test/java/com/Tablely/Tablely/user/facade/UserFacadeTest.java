@@ -1,4 +1,4 @@
-package com.Tablely.Tablely.user.facede;
+package com.Tablely.Tablely.user.facade;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,8 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.Tablely.Tablely.global.exception.ErrorCode;
+import com.Tablely.Tablely.global.jwt.JwtUserInfo;
 import com.Tablely.Tablely.global.service.CipherService;
 import com.Tablely.Tablely.user.UserException;
+import com.Tablely.Tablely.user.domain.User;
 import com.Tablely.Tablely.user.domain.UserType;
 import com.Tablely.Tablely.user.dto.UserJoinReqDto;
 import com.Tablely.Tablely.user.service.UserQueryService;
@@ -30,13 +32,12 @@ class UserFacadeTest {
 	@Mock
 	CipherService oneWayCipherService;
 
-
 	@Test
 	@DisplayName("회원가입을 성공한다.")
 	public void add() {
-	    //given
+		//given
 		UserJoinReqDto userReqDto = new UserJoinReqDto("name", "test@email.com", UserType.CUSTOMER, "qwe123", "qwe123");
-	    //when then
+		//when then
 		assertDoesNotThrow(() -> userFacade.add(userReqDto));
 	}
 
@@ -53,5 +54,43 @@ class UserFacadeTest {
 		assertThatThrownBy(() -> userFacade.add(userReqDto))
 			.isInstanceOf(UserException.class)
 			.hasMessage(ErrorCode.USER_DUPLICATED.getDescription());
+	}
+
+	// 로그인에 성공한다.
+	@Test
+	@DisplayName("로그인에 성공한다.")
+	public void loginSuccess() throws Exception {
+		//given
+		String email = "test@email.com";
+		String password = "1234";
+		User mockUser = new User(email, password, "name1",UserType.CUSTOMER);
+
+		when(userQueryService.findByEmail(email)).thenReturn(mockUser);
+		when(oneWayCipherService.match(password, mockUser.getPassword())).thenReturn(true);
+
+		//when
+		JwtUserInfo loginUser = userFacade.login("test@email.com", password);
+
+		//then
+		assertThat(loginUser.getUserType()).isEqualTo(mockUser.getUserType());
+	}
+
+	// 로그인에 실패한다.
+	@Test
+	@DisplayName("비밀번호가 달라 INVALID_PASSWORD(비밀번호가 일치하지 않습니다.)에러를 발생시켜 로그인에 실패한다.")
+	public void loginFail() throws Exception {
+		//given
+		String email = "test@email.com";
+		String password = "1234";
+		User mockUser = new User(email, password, "name1",UserType.CUSTOMER);
+
+		when(userQueryService.findByEmail(email)).thenReturn(mockUser);
+		when(oneWayCipherService.match(password, mockUser.getPassword())).thenReturn(false);
+
+		//when && then
+		assertThatThrownBy(() -> userFacade.login(email, password))
+			.isInstanceOf(UserException.class)
+			.hasMessage(ErrorCode.INVALID_PASSWORD.getDescription());
+
 	}
 }

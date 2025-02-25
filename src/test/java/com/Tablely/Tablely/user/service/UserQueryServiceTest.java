@@ -32,7 +32,7 @@ class UserQueryServiceTest {
     }
 
     @Test
-    @DisplayName("이메일 중복을 체크가 실패하여 USER_DUPLICATED 예외가 발생한다.")
+    @DisplayName("이메일 중복을 체크가 실패하여 USER_DUPLICATED(이메일이 중복되었습니다.) 예외가 발생한다.")
     void duplicateFailed() {
         //given
         String email = "test@email.com";

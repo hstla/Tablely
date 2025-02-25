@@ -1,6 +1,5 @@
 package com.Tablely.Tablely.user.controller;
 
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,14 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.Tablely.Tablely.global.jwt.JwtUserInfo;
 import com.Tablely.Tablely.global.jwt.JwtUtil;
 import com.Tablely.Tablely.user.dto.UserJoinReqDto;
-import com.Tablely.Tablely.user.dto.UserAddResDto;
 import com.Tablely.Tablely.user.dto.UserLoginReqDto;
-import com.Tablely.Tablely.user.facede.UserFacade;
+import com.Tablely.Tablely.user.facade.UserFacade;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

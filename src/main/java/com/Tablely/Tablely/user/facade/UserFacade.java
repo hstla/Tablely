@@ -1,4 +1,4 @@
-package com.Tablely.Tablely.user.facede;
+package com.Tablely.Tablely.user.facade;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +19,11 @@ import lombok.RequiredArgsConstructor;
 public class UserFacade {
 	private final UserService userService;
 	private final UserQueryService userQueryService;
-	private final CipherService oneWayCipherService;
 	private final CipherService cipherService;
-
 
 	@Transactional
 	public void add(UserJoinReqDto userJoinReqDto) {
-		String encryptPassword = oneWayCipherService.encrypt(userJoinReqDto.getPassword());
+		String encryptPassword = cipherService.encrypt(userJoinReqDto.getPassword());
 		userQueryService.checkEmailDuplicated(userJoinReqDto.getEmail());
 		userService.join(userJoinReqDto.getName(), userJoinReqDto.getEmail(), userJoinReqDto.getUserType(),
 			encryptPassword);
@@ -34,18 +32,20 @@ public class UserFacade {
 	@Transactional(readOnly = true)
 	public JwtUserInfo login(String email, String password) {
 		User findUser = userQueryService.findByEmail(email);
-
-		if (!cipherService.match(password, findUser.getPassword())) {
-			throw new UserException(ErrorCode.INVALID_PASSWORD);
-		}
-
+		passwordCheck(password, findUser);
 		return new JwtUserInfo(findUser.getId(), findUser.getUserType());
 	}
 
-	// todo soft delete 추가하여 삭제 유무를 판단 후 삭제한다.
+	// todo soft delete를 추가하여 삭제 유무를 판단 후 삭제한다.
 	@Transactional
 	public void delete(Long userId) {
 		User findUser = userQueryService.findById(userId);
 		userService.deleteUser(findUser.getId());
+	}
+
+	private void passwordCheck(String password, User findUser) {
+		if (!cipherService.match(password, findUser.getPassword())) {
+			throw new UserException(ErrorCode.INVALID_PASSWORD);
+		}
 	}
 }
